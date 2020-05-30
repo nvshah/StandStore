@@ -9,6 +9,7 @@ class ProductsGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     //Establish direct communication channel to the provider instance of Product class
+    //Infact this will return the instance of that Provider Class mentioned in Generuc type T
     final productsData = Provider.of<Products>(context);
     final products = productsData.items;
     

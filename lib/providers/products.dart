@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../models/product.dart';
 
 //This is only class , but not actually Provider, It's just a Skeleton of Provider
+//It takes some utility from mixin ChangeNotifier
 class Products with ChangeNotifier{
   List<Product> _items = [
     Product(
@@ -43,6 +44,10 @@ class Products with ChangeNotifier{
     return [..._items];
   }
 
+  //get the product by an Id
+  Product findById(String id){
+    return _items.firstWhere((item) => item.id == id);
+  }
   void addProduct(){
     notifyListeners();
   }
