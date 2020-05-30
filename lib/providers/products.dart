@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../models/product.dart';
+import './product.dart';
 
 //This is only class , but not actually Provider, It's just a Skeleton of Provider
 //It takes some utility from mixin ChangeNotifier
