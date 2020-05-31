@@ -18,7 +18,9 @@ class ProductItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     //this will re-build the ProductItem when any of the data of any Product Item (that is listening) Changes
-    final product = Provider.of<Product>(context);
+    //Here Provider.of() always trigger the build method so we are not listening for entire widget
+    final product = Provider.of<Product>(context, listen: false);
+    print("product rebuilds");
     //ClipRRect is used when we want to change the type of corner to circular
     //As GridTile do not have any property to define the circular border, We have to use ClipRRect
     return ClipRRect(
@@ -40,12 +42,19 @@ class ProductItem extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
           backgroundColor: Colors.black87,
-          leading: IconButton(
-            icon: Icon(product.isFavorite ? Icons.favorite : Icons.favorite_border),
-            onPressed: () {
-              product.toggleFavoriteStatus();
-            },
-            color: Theme.of(context).accentColor,
+          //Consumer so that only icon-favorite will be update & re-build
+          //Always listens to changes
+          leading: Consumer<Product>(
+            //(ctxt, product, child) <- here we won't require child for now as
+            // there are no part of IconButton which remains constant even when new updates from provider arrives
+            builder: (ctxt, product, _) => IconButton(
+              icon: Icon(product.isFavorite ? Icons.favorite : Icons.favorite_border),
+              onPressed: () {
+                product.toggleFavoriteStatus();
+              },
+              color: Theme.of(context).accentColor,
+            ),
+            //child: Text('when we require to pass child argument in builder value')
           ),
           trailing: IconButton(
             icon: Icon(Icons.shopping_cart),
