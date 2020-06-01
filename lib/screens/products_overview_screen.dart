@@ -31,12 +31,15 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
             //ICON
             icon: Icon(Icons.more_vert),
             onSelected: (FilterOptions selectedValue){
-              if(selectedValue == FilterOptions.Favorites){
+              setState(() {
+                if(selectedValue == FilterOptions.Favorites){
                 _showOnlyFavorites = true;
               }
               else{
                 _showOnlyFavorites = false;
-              }
+              }  
+              });
+              
             },
           ),
         ],

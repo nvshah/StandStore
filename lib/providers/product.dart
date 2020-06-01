@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 
+//Product as provider for now is jus meant tro track for favorite status of product
 class Product with ChangeNotifier {
   final String id;
   final String title;

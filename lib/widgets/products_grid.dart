@@ -15,6 +15,7 @@ class ProductsGrid extends StatelessWidget {
     //Establish direct communication channel to the provider instance of Product class
     //Infact this will return the instance of that Provider Class mentioned in Generuc type T
     final productsData = Provider.of<Products>(context);
+    //filtered data source for grid contents
     final products = showFavsOnly ? productsData.favoriteItems : productsData.items;
 
     // Note - It's ok we are still using ProductItem() with params as it is intact & not required unnecessary parameter forwarding
