@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../widgets/products_grid.dart';
+import '../widgets/badge.dart';
+import '../providers/cart.dart';
 
 enum FilterOptions {
   Favorites,
@@ -44,6 +47,20 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
                 }
               });
             },
+          ),
+          //This will listen to cart changes when any new product is added by tapping add to cart button on item image
+          //& update the cart values
+          Consumer<Cart>(
+            builder: (_, cart, ch) => Badge(
+              //this child will not re-render on notification frm provider
+              child: ch,
+              value: cart.itemCount.toString(),
+            ),
+            //this child will not re-render on notification frm provider
+            child: IconButton(
+              icon: Icon(Icons.shopping_cart),
+              onPressed: () {},
+            ),
           ),
         ],
       ),

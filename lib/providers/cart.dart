@@ -15,10 +15,23 @@ class CartItem {
 }
 
 class Cart with ChangeNotifier {
-  Map<String, CartItem> _items;
+  //Mapped productId with CartItem
+  Map<String, CartItem> _items = {};
 
   Map<String, CartItem> get items {
     return {..._items};
+  }
+
+  int get itemCount{
+    return _items.length;
+  }
+
+  double get totalPrice{
+    double total = 0;
+    _items.forEach((key, cartItem){
+      total += cartItem.price * cartItem.quantity;
+    });
+    return total;
   }
 
   void addItem(String productId, String title, double price) {
@@ -43,5 +56,7 @@ class Cart with ChangeNotifier {
                 quantity: 1,
               ));
     }
+    //after adding item as this is provider always trigger notifier for listeners
+    notifyListeners();
   }
 }

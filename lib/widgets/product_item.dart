@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../screens/product_details_screen.dart';
 import '../providers/product.dart';
+import '../providers/cart.dart';
 
 class ProductItem extends StatelessWidget {
   // final String id;
@@ -19,7 +20,9 @@ class ProductItem extends StatelessWidget {
   Widget build(BuildContext context) {
     //this will re-build the ProductItem when any of the data of any Product Item (that is listening) Changes
     //Here Provider.of() always trigger the build method so we are not listening for entire widget
+    //nearest access to object of Product()
     final product = Provider.of<Product>(context, listen: false);
+    final cart = Provider.of<Cart>(context, listen: false);
     print("product rebuilds");
     //ClipRRect is used when we want to change the type of corner to circular
     //As GridTile do not have any property to define the circular border, We have to use ClipRRect
@@ -58,7 +61,9 @@ class ProductItem extends StatelessWidget {
           ),
           trailing: IconButton(
             icon: Icon(Icons.shopping_cart),
-            onPressed: () {},
+            onPressed: () {
+              cart.addItem(product.id, product.title, product.price);
+            },
             color: Theme.of(context).accentColor,
           ),
         ),
