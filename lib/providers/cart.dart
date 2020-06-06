@@ -59,4 +59,10 @@ class Cart with ChangeNotifier {
     //after adding item as this is provider always trigger notifier for listeners
     notifyListeners();
   }
+
+  //Remve the item from the cart item's list
+  void removeItem(String productId){
+    _items.remove(productId);
+    notifyListeners();
+  }
 }

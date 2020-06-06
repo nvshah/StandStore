@@ -1,14 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../providers/cart.dart';
+//As we're only using Cart class of cart.dart
+import '../providers/cart.dart' show Cart;
+import '../widgets/cart_item.dart';
+//import '../widgets/cart_item.dart' as ci;
 
 class CartScreen extends StatelessWidget {
   static const routeName = '/cart';
 
   @override
   Widget build(BuildContext context) {
-    final cart = Provider.of<Cart>(context, listen: false);
+    //listening to changes 
+    final cart = Provider.of<Cart>(context);
+
+    final cartItemsList = cart.items.values.toList();
+    final cartItemsKeyList = cart.items.keys.toList();
+    
     return Scaffold(
       appBar: AppBar(
         title: Text('Your Cart'),
@@ -40,6 +48,19 @@ class CartScreen extends StatelessWidget {
                   ),
                   FlatButton(child: Text('Order Now'), onPressed: (){},),
                 ],
+              ),
+            ),
+          ),
+          SizedBox(height: 10,),
+          Expanded(
+            child: ListView.builder(
+              itemCount: cart.items.length,
+              itemBuilder: (ctxt, i) => CartItem(
+                id: cartItemsList[i].id,
+                title: cartItemsList[i].title,
+                price: cartItemsList[i].price,
+                quantity: cartItemsList[i].quantity,
+                productId: cartItemsKeyList[i],
               ),
             ),
           )
