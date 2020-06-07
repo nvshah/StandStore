@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../widgets/products_grid.dart';
 import '../widgets/badge.dart';
 import '../providers/cart.dart';
+import '../screens/cart_screen.dart';
 
 enum FilterOptions {
   Favorites,
@@ -16,7 +17,7 @@ class ProductsOverviewScreen extends StatefulWidget {
 }
 
 class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
-  bool _showOnlyFavorites;
+  var _showOnlyFavorites = false;
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +60,9 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
             //this child will not re-render on notification frm provider
             child: IconButton(
               icon: Icon(Icons.shopping_cart),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.of(context).pushNamed(CartScreen.routeName);
+              },
             ),
           ),
         ],

@@ -23,6 +23,7 @@ class CartScreen extends StatelessWidget {
       ),
       body: Column(
         children: <Widget>[
+          //CART OVERVIEW
           Card(
             margin: EdgeInsets.all(15),
             child: Padding(
@@ -30,6 +31,7 @@ class CartScreen extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
+                  //TOTAL PRICE LABEL
                   Text(
                     'Total',
                     style: TextStyle(fontSize: 20),
@@ -37,21 +39,24 @@ class CartScreen extends StatelessWidget {
                   //This will take as much space it can take
                   //So Text will be on left LHS & total amount & order button on RHS
                   Spacer(),
+                  //TOTAL PRICE AMOUNT
                   Chip(
                     label: Text(
                       '\$${cart.totalPrice}',
                       style: TextStyle(
-                        color: Theme.of(context).primaryTextTheme.title.color,
+                        //color: Theme.of(context).primaryTextTheme.title.color,
                       ),
                     ),
                     backgroundColor: Theme.of(context).primaryColor,
                   ),
+                  //ORDER BUTTON
                   FlatButton(child: Text('Order Now'), onPressed: (){},),
                 ],
               ),
             ),
           ),
           SizedBox(height: 10,),
+          //LIST OF ITEMS IN CART
           Expanded(
             child: ListView.builder(
               itemCount: cart.items.length,

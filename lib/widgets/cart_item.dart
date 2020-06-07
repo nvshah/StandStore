@@ -20,6 +20,7 @@ class CartItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    //On Swipe item will disappear so using Dismissible widget
     return Dismissible(
       key: ValueKey(id),
       background: Container(
@@ -36,10 +37,12 @@ class CartItem extends StatelessWidget {
           size: 40,
         ),
       ),
+      //Only when it will be swipe from right to left, item will be deleted
       direction: DismissDirection.endToStart,
       onDismissed: (direction) {
         Provider.of<Cart>(context, listen: false).removeItem(productId);
       },
+      //CARD -> Item details
       child: Card(
         margin: EdgeInsets.symmetric(
           horizontal: 15,
@@ -47,6 +50,7 @@ class CartItem extends StatelessWidget {
         ),
         child: Padding(
           padding: EdgeInsets.all(8),
+          //LIST-TILE <- item details
           child: ListTile(
             leading: CircleAvatar(
               child: Padding(
