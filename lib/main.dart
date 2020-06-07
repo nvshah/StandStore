@@ -6,6 +6,7 @@ import './providers/products.dart';
 import './screens/product_details_screen.dart';
 import './providers/cart.dart';
 import './screens/cart_screen.dart';
+import './providers/orders.dart';
 
 void main() => runApp(MyApp());
 
@@ -26,6 +27,10 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider.value(
           //As cart is also being used at multiple screen in out app so it's provider is managed at root level here
           value: Cart(),
+        ),
+        ChangeNotifierProvider.value(
+          //As Order is used at Cart Screen so it's been attached as provider over here
+          value: Orders(),
         )
       ],
       child: MaterialApp(
