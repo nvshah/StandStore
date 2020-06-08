@@ -7,6 +7,7 @@ import './screens/product_details_screen.dart';
 import './providers/cart.dart';
 import './screens/cart_screen.dart';
 import './providers/orders.dart';
+import './screens/orders_screen.dart';
 
 void main() => runApp(MyApp());
 
@@ -29,7 +30,7 @@ class MyApp extends StatelessWidget {
           value: Cart(),
         ),
         ChangeNotifierProvider.value(
-          //As Order is used at Cart Screen so it's been attached as provider over here
+          //As Order is used at Cart Screen so it's been attached as provider over here; Now we can listen to Order anyWhere from application
           value: Orders(),
         )
       ],
@@ -44,6 +45,7 @@ class MyApp extends StatelessWidget {
         routes: {
           ProductDetailsScreen.routeName: (ctxt) => ProductDetailsScreen(),
           CartScreen.routeName: (ctxt) => CartScreen(),
+          OrdersScreen.routeName: (ctxt) => OrdersScreen(),
         },
       ),
     );
