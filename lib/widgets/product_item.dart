@@ -28,6 +28,7 @@ class ProductItem extends StatelessWidget {
     //As GridTile do not have any property to define the circular border, We have to use ClipRRect
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
+      //IMAGE PRODUCT
       child: GridTile(
         //We are using gesture detector becuase we do not have onTap property for Image widget
         child: GestureDetector(
@@ -40,6 +41,7 @@ class ProductItem extends StatelessWidget {
           ),
         ),
         footer: GridTileBar(
+          //PRODUCT TITLE
           title: Text(
             product.title,
             textAlign: TextAlign.center,
@@ -51,15 +53,30 @@ class ProductItem extends StatelessWidget {
             //(ctxt, product, child) <- here we won't require child for now as
             // there are no part of IconButton which remains constant even when new updates from provider arrives
             builder: (ctxt, product, _) => IconButton(
+              //FAVORITE BUTTON
               icon: Icon(product.isFavorite ? Icons.favorite : Icons.favorite_border),
               onPressed: () {
                 product.toggleFavoriteStatus();
+                //to avoid undesired result on simultaneous press, 
+                Scaffold.of(context).hideCurrentSnackBar();
+                //this will establish connection to scaffold of product_overview page
+                Scaffold.of(context).showSnackBar(SnackBar(
+                  content: Text('Added item to cart !'),
+                  duration: Duration(seconds: 2),
+                  action: SnackBarAction(
+                    label: 'Undo',
+                    onPressed: (){
+                      cart.removeSingleItem(product.id);
+                    },
+                  ),
+                ));
               },
               color: Theme.of(context).accentColor,
             ),
             //child: Text('when we require to pass child argument in builder value')
           ),
           trailing: IconButton(
+            //SHOPPING CART BUTTON
             icon: Icon(Icons.shopping_cart),
             onPressed: () {
               cart.addItem(product.id, product.title, product.price);
