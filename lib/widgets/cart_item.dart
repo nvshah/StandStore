@@ -40,6 +40,7 @@ class CartItem extends StatelessWidget {
       //Only when it will be swipe from right to left, item will be deleted
       direction: DismissDirection.endToStart,
       onDismissed: (direction) {
+        //get the nearby cart provider
         Provider.of<Cart>(context, listen: false).removeItem(productId);
       },
       //If confirmDismiss is true then only onDismissed will execute
@@ -51,7 +52,7 @@ class CartItem extends StatelessWidget {
             content: Text('Do you want to remove the item from the cart ?'),
             actions: <Widget>[
               FlatButton(child: Text('No'), onPressed: () => Navigator.of(ctxt).pop(false)),
-              FlatButton(child: Text('Yes'), onPressed: () => Navigator.of(ctxt).pop(true))
+              FlatButton(child: Text('Yes'), onPressed: () => Navigator.of(ctxt).pop(true)),
             ],
           )
         );
