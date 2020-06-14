@@ -33,7 +33,8 @@ class ProductItem extends StatelessWidget {
         //We are using gesture detector becuase we do not have onTap property for Image widget
         child: GestureDetector(
           onTap: () {
-            Navigator.of(context).pushNamed(ProductDetailsScreen.routeName, arguments: product.id);
+            Navigator.of(context).pushNamed(ProductDetailsScreen.routeName,
+                arguments: product.id);
           },
           child: Image.network(
             product.imageUrl,
@@ -54,22 +55,10 @@ class ProductItem extends StatelessWidget {
             // there are no part of IconButton which remains constant even when new updates from provider arrives
             builder: (ctxt, product, _) => IconButton(
               //FAVORITE BUTTON
-              icon: Icon(product.isFavorite ? Icons.favorite : Icons.favorite_border),
+              icon: Icon(
+                  product.isFavorite ? Icons.favorite : Icons.favorite_border),
               onPressed: () {
                 product.toggleFavoriteStatus();
-                //to avoid undesired result on simultaneous press, 
-                Scaffold.of(context).hideCurrentSnackBar();
-                //this will establish connection to scaffold of product_overview page
-                Scaffold.of(context).showSnackBar(SnackBar(
-                  content: Text('Added item to cart !'),
-                  duration: Duration(seconds: 2),
-                  action: SnackBarAction(
-                    label: 'Undo',
-                    onPressed: (){
-                      cart.removeSingleItem(product.id);
-                    },
-                  ),
-                ));
               },
               color: Theme.of(context).accentColor,
             ),
@@ -80,6 +69,19 @@ class ProductItem extends StatelessWidget {
             icon: Icon(Icons.shopping_cart),
             onPressed: () {
               cart.addItem(product.id, product.title, product.price);
+              //to avoid undesired result on simultaneous press,
+              Scaffold.of(context).hideCurrentSnackBar();
+              //this will establish connection to scaffold of product_overview page
+              Scaffold.of(context).showSnackBar(SnackBar(
+                content: Text('Added item to cart !'),
+                duration: Duration(seconds: 2),
+                action: SnackBarAction(
+                  label: 'Undo',
+                  onPressed: () {
+                    cart.removeSingleItem(product.id);
+                  },
+                ),
+              ));
             },
             color: Theme.of(context).accentColor,
           ),
