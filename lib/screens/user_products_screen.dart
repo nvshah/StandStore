@@ -11,6 +11,7 @@ class UserProductsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    //We wnat to rebuild the state when Products added or removed or edited
     final productsData = Provider.of<Products>(context);
 
     return Scaffold(
@@ -33,6 +34,7 @@ class UserProductsScreen extends StatelessWidget {
           itemBuilder: (_, i) => Column(
             children: <Widget>[
               UserProductItem(
+                productsData.items[i].id,
                 productsData.items[i].title,
                 productsData.items[i].imageUrl,
               ),

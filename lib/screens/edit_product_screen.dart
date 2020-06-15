@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../providers/product.dart';
+import '../providers/products.dart';
 
 class EditProductScreen extends StatefulWidget {
   static const routeName = '/edit-products';
@@ -20,15 +22,46 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
   //Global key to communicate with Form State
   final _form = GlobalKey<FormState>();
-
+  
+  //product instance
   var _editedProduct =
       Product(id: null, title: '', description: '', imageUrl: '', price: 0);
+
+  // inorder to ensure that didChangeDependencies only fetch the data from ModalRoute when screen is loaded
+  var _isInit = true;
+  var _initValues = {
+    'title': '',
+    'description': '',
+    'price': '0',
+    'imageUrl': '',
+  };
+    
 
   @override
   void initState() {
     //Now this method will listen & handle when focus happens or loses
     _imageUrlFocusNode.addListener(_updateImage);
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    //Fetch Roue params only once when screen loaded 
+    if(_isInit){
+      final productId = ModalRoute.of(context).settings.arguments as String;
+      if(productId != null){
+        _editedProduct = Provider.of<Products>(context, listen: false).findById(productId);
+        _initValues = {
+          'title': _editedProduct.title,
+          'description': _editedProduct.description,
+          //'imageUrl': _editedProduct.imageUrl,    //As you can't have Controller & initValue assign both at same time
+          'price': _editedProduct.price.toString(),
+        };
+        _imageUrlController.text = _editedProduct.imageUrl;
+      }
+      _isInit = false;
+    }
+    super.didChangeDependencies();
   }
 
   @override
@@ -63,11 +96,14 @@ class _EditProductScreenState extends State<EditProductScreen> {
       //It's a bit of hack
       setState(() {});
       //print('Focus Of Image Changes');
+
+     
     }
   }
 
   void _saveForm() {
     //Check if there is any error message on validation before saving the form inputs
+    //this will call validator() of every Form TextFormField() 
     final isValid = _form.currentState.validate();
     if (!isValid) {
       return;
@@ -75,6 +111,19 @@ class _EditProductScreenState extends State<EditProductScreen> {
     //this will save the form -> onSaved() of every TextFormField will be called
     _form.currentState.save();
     //print('Save Form is called');
+    
+    //here we just want one way communication i.e access of methods of Products class
+
+    if(_editedProduct.id != null){
+      //update product from global products list
+      Provider.of<Products>(context, listen: false).updateProduct(_editedProduct);
+    }
+    else{
+      //add product to global products list
+      Provider.of<Products>(context, listen: false).addProduct(_editedProduct);
+    }
+    // Go back to previous screen
+    Navigator.of(context).pop();
   }
 
   @override
@@ -100,6 +149,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
               //TITLE INPUT
               TextFormField(
                 decoration: InputDecoration(labelText: "Title"),
+                initialValue: _initValues['title'],
                 textInputAction: TextInputAction.next,
                 //When the current input is subitted or next button is click, then we want to focus the Input that fetch the price i/p
                 onFieldSubmitted: (_) =>
@@ -114,17 +164,19 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 },
                 onSaved: (value) {
                   _editedProduct = Product(
-                    id: null,
+                    id: _editedProduct.id,
                     title: value,
                     price: _editedProduct.price,
                     imageUrl: _editedProduct.imageUrl,
                     description: _editedProduct.description,
+                    isFavorite: _editedProduct.isFavorite,
                   );
                 },
               ),
               //PRICE INPUT
               TextFormField(
                 decoration: InputDecoration(labelText: "Price"),
+                initialValue: _initValues['price'],
                 textInputAction: TextInputAction.next,
                 //Fetch only numbers for current input
                 keyboardType: TextInputType.number,
@@ -149,17 +201,19 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 },
                 onSaved: (value) {
                   _editedProduct = Product(
-                    id: null,
+                    id: _editedProduct.id,
                     title: _editedProduct.title,
                     price: double.parse(value),
                     imageUrl: _editedProduct.imageUrl,
                     description: _editedProduct.description,
+                    isFavorite: _editedProduct.isFavorite,
                   );
                 },
               ),
               //DESCRIPTION INPUT
               TextFormField(
                 decoration: InputDecoration(labelText: "Description"),
+                initialValue: _initValues['description'],
                 //3 line space available
                 maxLines: 3,
                 //facilitate multiline fetch
@@ -177,11 +231,12 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 },
                 onSaved: (value) {
                   _editedProduct = Product(
-                    id: null,
+                    id: _editedProduct.id,
                     title: _editedProduct.title,
                     price: _editedProduct.price,
                     imageUrl: _editedProduct.imageUrl,
                     description: value,
+                    isFavorite: _editedProduct.isFavorite,
                   );
                 },
               ),
@@ -243,11 +298,12 @@ class _EditProductScreenState extends State<EditProductScreen> {
                       onFieldSubmitted: (_) => _saveForm(),
                       onSaved: (value) {
                         _editedProduct = Product(
-                          id: null,
+                          id: _editedProduct.id,
                           title: _editedProduct.title,
                           price: _editedProduct.price,
                           imageUrl: value,
                           description: _editedProduct.description,
+                          isFavorite: _editedProduct.isFavorite,
                         );
                       },
                     ),
