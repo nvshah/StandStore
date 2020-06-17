@@ -1,10 +1,13 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 import './product.dart';
 
 //This is only class , but not actually Provider, It's just a Skeleton of Provider
 //It takes some utility from mixin ChangeNotifier
-class Products with ChangeNotifier{
+class Products with ChangeNotifier {
   List<Product> _items = [
     Product(
       id: 'p1',
@@ -39,50 +42,62 @@ class Products with ChangeNotifier{
           'https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Cast-Iron-Pan.jpg/1024px-Cast-Iron-Pan.jpg',
     ),
   ];
-  
+
   //Get the All products items
-  List<Product> get items{
+  List<Product> get items {
     return [..._items];
   }
-  
+
   //Get the list of all favorite product Items
-  List<Product> get favoriteItems{
+  List<Product> get favoriteItems {
     return _items.where((item) => item.isFavorite).toList();
   }
 
   //get the product by an Id
-  Product findById(String id){
+  Product findById(String id) {
     return _items.firstWhere((item) => item.id == id);
   }
 
   //add new product to current list
-  void addProduct(Product product){
-    final newProduct = Product(
-      id:DateTime.now().toString(),
-      title: product.title,
-      description: product.description,
-      imageUrl: product.imageUrl,
-      price: product.price,
-    );
-    
+  void addProduct(Product product) {
+    const url = 'https://flutter-demo-e4fa6.firebaseio.com/products.json';
+    //Send POST request -> this will create new folder products if it do not exist at base database url
+    http
+        .post(url,
+            body: json.encode({
+              'title': product.title,
+              'description': product.description,
+              'imageUrl': product.imageUrl,
+              'price': product.price,
+              'isFavorite': product.isFavorite,
+            }))
+        .then((response) {
+      final newProduct = Product(
+        id: json.decode(response.body)['name'],
+        title: product.title,
+        description: product.description,
+        imageUrl: product.imageUrl,
+        price: product.price,
+      );
+    });
+
     _items.add(newProduct);
     notifyListeners();
   }
 
   //Update the product
-  void updateProduct(Product product){
+  void updateProduct(Product product) {
     final index = _items.indexWhere((item) => item.id == product.id);
-    if(index >= 0){
+    if (index >= 0) {
       _items[index] = product;
       notifyListeners();
-    }
-    else{
+    } else {
       print('...');
     }
   }
 
   //delete the product from list
-  void removeProduct(String id){
+  void removeProduct(String id) {
     _items.removeWhere((item) => item.id == id);
     notifyListeners();
   }
