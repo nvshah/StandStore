@@ -59,10 +59,10 @@ class Products with ChangeNotifier {
   }
 
   //add new product to current list
-  void addProduct(Product product) {
+  Future<void> addProduct(Product product) {
     const url = 'https://flutter-demo-e4fa6.firebaseio.com/products.json';
     //Send POST request -> this will create new folder products if it do not exist at base database url
-    http
+    return http
         .post(url,
             body: json.encode({
               'title': product.title,
@@ -79,10 +79,9 @@ class Products with ChangeNotifier {
         imageUrl: product.imageUrl,
         price: product.price,
       );
+      _items.add(newProduct);
+      notifyListeners();
     });
-
-    _items.add(newProduct);
-    notifyListeners();
   }
 
   //Update the product
