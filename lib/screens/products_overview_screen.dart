@@ -35,10 +35,14 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
   @override
   void didChangeDependencies() {
     if (_isInit) {
-      //Show loading progress while dat from server is fetched
-      _isLoading = true;
+      setState(() {
+        //Show loading progress while dat from server is fetched
+        _isLoading = true;
+      });
       Provider.of<Products>(context).fetchProduct().then((_) {
-        _isLoading = false;
+        setState(() {
+          _isLoading = false;
+        });
       });
     }
     _isInit = false;

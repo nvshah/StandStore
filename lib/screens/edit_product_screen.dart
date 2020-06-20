@@ -120,17 +120,16 @@ class _EditProductScreenState extends State<EditProductScreen> {
     //here we just want one way communication i.e access of methods of Products class
     if (_editedProduct.id != null) {
       //update product from global products list
-      await Provider.of<Products>(context, listen: false).updateProduct(_editedProduct);
-      
-    } 
-    else {
-      try{
-         //add product to global products list, after product is added then only we want to pop back to screen
-        await Provider.of<Products>(context, listen: false).addProduct(_editedProduct);
-      }
-      catch(error){
+      await Provider.of<Products>(context, listen: false)
+          .updateProduct(_editedProduct);
+    } else {
+      try {
+        //add product to global products list, after product is added then only we want to pop back to screen
+        await Provider.of<Products>(context, listen: false)
+            .addProduct(_editedProduct);
+      } catch (error) {
         //wait until user press ok button after reading message
-       await showDialog(
+        await showDialog(
             context: context,
             builder: (ctxt) => AlertDialog(
                   title: Text('An error occured !'),
@@ -156,10 +155,10 @@ class _EditProductScreenState extends State<EditProductScreen> {
     }
 
     setState(() {
-        _isLoading = false;
-      });
-      // Go back to previous screen
-      Navigator.of(context).pop();
+      _isLoading = false;
+    });
+    // Go back to previous screen
+    Navigator.of(context).pop();
   }
 
   @override

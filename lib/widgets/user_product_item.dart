@@ -13,6 +13,9 @@ class UserProductItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    //As Scaffol.of(context) does not get resolve inside Future, we need to declare it outside
+    final scaffold = Scaffold.of(context);
+
     return ListTile(
       //IMAGE
       leading: CircleAvatar(
@@ -33,15 +36,23 @@ class UserProductItem extends StatelessWidget {
               icon: Icon(Icons.edit),
               color: Theme.of(context).primaryColor,
               onPressed: () {
-                Navigator.of(context).pushNamed(EditProductScreen.routeName, arguments: id);
+                Navigator.of(context)
+                    .pushNamed(EditProductScreen.routeName, arguments: id);
               },
             ),
             //DELETE PRODUCT
             IconButton(
               icon: Icon(Icons.delete),
               color: Theme.of(context).errorColor,
-              onPressed: () {
-                Provider.of<Products>(context, listen:false).removeProduct(id);
+              onPressed: () async {
+                try {
+                  await Provider.of<Products>(context, listen: false)
+                      .removeProduct(id);
+                } catch (error) {
+                  scaffold.showSnackBar(SnackBar(
+                    content: Text('Deleting Failed !', textAlign: TextAlign.center,),
+                  ));
+                }
               },
             ),
           ],
