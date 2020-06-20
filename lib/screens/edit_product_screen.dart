@@ -101,7 +101,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
     }
   }
 
-  void _saveForm() {
+  void _saveForm() async {
     //Check if there is any error message on validation before saving the form inputs
     //this will call validator() of every Form TextFormField()
     final isValid = _form.currentState.validate();
@@ -112,6 +112,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
     _form.currentState.save();
     //print('Save Form is called');
 
+    //Show loading spinner while we send & fetch the data with the server
     setState(() {
       _isLoading = true;
     });
@@ -119,26 +120,46 @@ class _EditProductScreenState extends State<EditProductScreen> {
     //here we just want one way communication i.e access of methods of Products class
     if (_editedProduct.id != null) {
       //update product from global products list
-      Provider.of<Products>(context, listen: false)
-          .updateProduct(_editedProduct);
-      setState(() {
+      await Provider.of<Products>(context, listen: false).updateProduct(_editedProduct);
+      
+    } 
+    else {
+      try{
+         //add product to global products list, after product is added then only we want to pop back to screen
+        await Provider.of<Products>(context, listen: false).addProduct(_editedProduct);
+      }
+      catch(error){
+        //wait until user press ok button after reading message
+       await showDialog(
+            context: context,
+            builder: (ctxt) => AlertDialog(
+                  title: Text('An error occured !'),
+                  content: Text('Something went wrong.'),
+                  actions: <Widget>[
+                    FlatButton(
+                      child: Text('Ok'),
+                      //close the dialog when pressed ok - removes current overlay
+                      onPressed: () => Navigator.of(context).pop(),
+                    )
+                  ],
+                ));
+      }
+      // finally{
+      //   //Execute No matter what happen
+      //   setState(() {
+      //     _isLoading = false;
+      //   });
+      //    // Go back to previous screen
+      //   //We will only navigate back when item gets added into global list
+      //   Navigator.of(context).pop();
+      // }
+    }
+
+    setState(() {
         _isLoading = false;
       });
       // Go back to previous screen
       Navigator.of(context).pop();
-    } else {
-      //add product to global products list
-      Provider.of<Products>(context, listen: false)
-          .addProduct(_editedProduct)
-          .then((_) {
-        setState(() {
-          _isLoading = false;
-        });
-        // Go back to previous screen
-        //We will only navigate back when item gets added into global list
-        Navigator.of(context).pop();
-      });
-    }
   }
 
   @override
@@ -155,6 +176,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
         ],
       ),
       body: _isLoading
+          // wait unitl product updates recieved from server
           ? Center(
               child: CircularProgressIndicator(),
             )
