@@ -15,7 +15,7 @@ class CartItem {
 }
 
 class Cart with ChangeNotifier {
-  //Mapped productId with CartItem
+  //Mapped productId with CartItem, unique id of CartItem is Date
   Map<String, CartItem> _items = {};
 
   Map<String, CartItem> get items {
@@ -34,6 +34,7 @@ class Cart with ChangeNotifier {
     return total;
   }
 
+  //Add item to cart
   void addItem(String productId, String title, double price) {
     if (_items.containsKey(productId)) {
       //_items[productId].quantity = _items[productId].quantity + 1;

@@ -25,6 +25,41 @@ class Orders with ChangeNotifier {
     return [..._orders];
   }
 
+  Future<void> fetchOrder() async {
+    const url = 'https://flutter-demo-e4fa6.firebaseio.com/orders.json';
+    try {
+      final response = await http.get(url);
+      final List<OrderItem> loadedOrders = [];
+      final extractedData = json.decode(response.body) as Map<String, dynamic>;
+
+      if(extractedData == null){
+        return;
+      }
+
+      //get all orders in the format according to OrderItem Blueprint
+      extractedData.forEach((orderId, orderData) {
+        //Re-create Loaded orders
+        loadedOrders.add(OrderItem(
+          id: orderId,
+          amount: orderData['amount'],
+          dateTime: DateTime.parse(orderData['dateTime']),
+          products: (orderData['products'] as List<dynamic>)
+              .map((item) => CartItem(
+                    id: item['id'],
+                    price: item['price'],
+                    quantity: item['quantity'],
+                    title: item['title'],
+                  ))
+              .toList(),
+        ));
+      });
+      //newest order first
+      _orders = loadedOrders.reversed.toList();
+      notifyListeners();
+
+    } catch (error) {}
+  }
+
   //Add the order to the order list
   Future<void> addOrder(List<CartItem> cartProducts, double total) async {
     const url = 'https://flutter-demo-e4fa6.firebaseio.com/orders.json';
@@ -56,7 +91,6 @@ class Orders with ChangeNotifier {
         ),
       );
       notifyListeners();
-      
     } catch (error) {}
   }
 }

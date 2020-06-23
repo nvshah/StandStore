@@ -97,19 +97,23 @@ class OrderButton extends StatefulWidget {
 class _OrderButtonState extends State<OrderButton> {
   bool _isLoading = false;
 
+  //Just as we want to show loading spinner instead of button, we are only making that Buttom portion as a Stateful Widget
+  //So that entire screen not get unnecessary re-build serveral time while waiting on response from server
   @override
   Widget build(BuildContext context) {
     return FlatButton(
       child: _isLoading ? CircularProgressIndicator() : Text('Order Now'),
-      //disable button on matching either requirements
+      //disable button on matching either requirements i.e if cart has no item or if any order is placed & waiting for response
+      //if onPressed is null then button will automatically be disabled
       onPressed: (widget.cart.totalPrice <= 0 || _isLoading)
           ? null
           : () async {
+            //We will only re-execute this Custom Button instead of entire build method, So we will re-build less
               setState(() {
                 _isLoading = true;
               });
 
-              //add the order
+              //add the order & await before clearing the cart
               await Provider.of<Orders>(context, listen: false)
                   .addOrder(widget.cartItemsList, widget.cart.totalPrice);
 
