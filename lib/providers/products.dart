@@ -79,6 +79,7 @@ class Products with ChangeNotifier {
       imageUrl: product.imageUrl,
       price: product.price,
     );
+    //add new product to local list of items
     _items.add(newProduct);
     notifyListeners();
   }

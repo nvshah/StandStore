@@ -10,6 +10,8 @@ import './providers/orders.dart';
 import './screens/orders_screen.dart';
 import './screens/user_products_screen.dart';
 import './screens/edit_product_screen.dart';
+import './screens/auth_screen.dart';
+import './providers/auth.dart';
 
 void main() => runApp(MyApp());
 
@@ -34,7 +36,10 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider.value(
           //As Order is used at Cart Screen so it's been attached as provider over here; Now we can listen to Order anyWhere from application
           value: Orders(),
-        )
+        ),
+        ChangeNotifierProvider.value(
+          value: Auth(),
+        ),
       ],
       child: MaterialApp(
         title: 'Shop App',
@@ -43,7 +48,7 @@ class MyApp extends StatelessWidget {
           accentColor: Colors.deepOrange,
           fontFamily: "Lato",
         ),
-        home: ProductsOverviewScreen(),
+        home: AuthScreen(),
         routes: {
           ProductDetailsScreen.routeName: (ctxt) => ProductDetailsScreen(),
           CartScreen.routeName: (ctxt) => CartScreen(),

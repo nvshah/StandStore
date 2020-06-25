@@ -33,16 +33,19 @@ class Product with ChangeNotifier {
     isFavorite = !isFavorite;
     notifyListeners();
     try {
+      //Inform server to update isFav value
       final response = await http.patch(
         url,
         body: json.encode({
           'isFavorite': isFavorite,
         }),
       );
+      //Something went wrong & operation was not perfromed at server side so undo changes
       if(response.statusCode >= 400){
         _setFavValue(oldStatus);
       }
     } catch (error) {
+      //If there is any particular error while updating data from server then undo the local value
       _setFavValue(oldStatus);
     }
   }
