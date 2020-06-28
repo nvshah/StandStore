@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../screens/product_details_screen.dart';
 import '../providers/product.dart';
 import '../providers/cart.dart';
+import '../providers/auth.dart';
 
 class ProductItem extends StatelessWidget {
   // final String id;
@@ -23,6 +24,7 @@ class ProductItem extends StatelessWidget {
     //nearest access to object of Product()
     final product = Provider.of<Product>(context, listen: false);
     final cart = Provider.of<Cart>(context, listen: false);
+    final authData = Provider.of<Auth>(context, listen: false);
     print("product rebuilds");
     //ClipRRect is used when we want to change the type of corner to circular
     //As GridTile do not have any property to define the circular border, We have to use ClipRRect
@@ -58,7 +60,7 @@ class ProductItem extends StatelessWidget {
               icon: Icon(
                   product.isFavorite ? Icons.favorite : Icons.favorite_border),
               onPressed: () {
-                product.toggleFavoriteStatus();
+                product.toggleFavoriteStatus(authData.token);
               },
               color: Theme.of(context).accentColor,
             ),

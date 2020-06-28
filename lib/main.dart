@@ -22,23 +22,35 @@ class MyApp extends StatelessWidget {
     //Only child widget which are listening will rebuild
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider.value(
-          //Same instance of provider for all child wdgets that are listening
-          //NOTE - In earlier version instead of create, builder argument was used to create provider instance
-          //create: (ctxt) => Products(),
-          //Here we are not using any context so utilising ChangeNotifierProvider.value
-          value: Products(),
-        ),
+        // ChangeNotifierProvider.value(
+        //   //Same instance of provider for all child wdgets that are listening
+        //   //NOTE - In earlier version instead of create, builder argument was used to create provider instance
+        //   //create: (ctxt) => Products(),
+        //   //Here we are not using any context so utilising ChangeNotifierProvider.value
+        //   value: Products(),
+        // ),
         ChangeNotifierProvider.value(
           //As cart is also being used at multiple screen in out app so it's provider is managed at root level here
           value: Cart(),
         ),
-        ChangeNotifierProvider.value(
-          //As Order is used at Cart Screen so it's been attached as provider over here; Now we can listen to Order anyWhere from application
-          value: Orders(),
-        ),
+        // ChangeNotifierProvider.value(
+        //   //As Order is used at Cart Screen so it's been attached as provider over here; Now we can listen to Order anyWhere from application
+        //   value: Orders(),
+        // ),
         ChangeNotifierProvider.value(
           value: Auth(),
+        ),
+        ChangeNotifierProxyProvider<Auth, Products>(
+          builder: (ctxt, auth, prevProducts) => Products(
+            auth.token,
+            prevProducts == null ? [] : prevProducts.items,
+          ),
+        ),
+        ChangeNotifierProxyProvider<Auth, Orders>(
+          builder: (ctxt, auth, prevOrders) => Orders(
+            auth.token,
+            prevOrders == null ? [] : prevOrders.orders,
+          ),
         ),
       ],
       child: Consumer<Auth>(

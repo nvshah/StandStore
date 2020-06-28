@@ -9,6 +9,7 @@ import '../models/http_exception.dart';
 //This is only class , but not actually Provider, It's just a Skeleton of Provider
 //It takes some utility from mixin ChangeNotifier
 class Products with ChangeNotifier {
+
   List<Product> _items = [
     // Product(
     //   id: 'p1',
@@ -44,6 +45,10 @@ class Products with ChangeNotifier {
     // ),
   ];
 
+  final String authToken;
+
+  Products(this.authToken, this._items);
+
   //Get the All products items
   List<Product> get items {
     return [..._items];
@@ -61,7 +66,7 @@ class Products with ChangeNotifier {
 
   //add new product to current list
   Future<void> addProduct(Product product) async {
-    const url = 'https://flutter-demo-e4fa6.firebaseio.com/products.json';
+    final url = 'https://flutter-demo-e4fa6.firebaseio.com/products.json?auth=$authToken';
     //Send POST request -> this will create new folder products if it do not exist at base database url
     final response = await http.post(url,
         body: json.encode({
@@ -86,7 +91,7 @@ class Products with ChangeNotifier {
 
   //Fetch Products from server
   Future<void> fetchProduct() async {
-    const url = 'https://flutter-demo-e4fa6.firebaseio.com/products.json';
+    final url = 'https://flutter-demo-e4fa6.firebaseio.com/products.json?auth=$authToken';
     try {
       final response = await http.get(url);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
@@ -115,7 +120,7 @@ class Products with ChangeNotifier {
     final index = _items.indexWhere((item) => item.id == product.id);
     if (index >= 0) {
       final url =
-          'https://flutter-demo-e4fa6.firebaseio.com/products/${product.id}.json';
+          'https://flutter-demo-e4fa6.firebaseio.com/products/${product.id}.json?auth=$authToken';
       //update item at server
       await http.patch(url,
           body: json.encode({
@@ -136,7 +141,7 @@ class Products with ChangeNotifier {
   Future<void> removeProduct(String id) async {
     //_items.removeWhere((item) => item.id == id);
     final url =
-        'https://flutter-demo-e4fa6.firebaseio.com/products/$id.json';
+        'https://flutter-demo-e4fa6.firebaseio.com/products/$id.json?auth=$authToken';
     final existingProductIndex = _items.indexWhere((item) => item.id == id);
     Product existingProduct = _items[existingProductIndex];
 
