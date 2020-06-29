@@ -14,6 +14,7 @@ class Auth with ChangeNotifier {
     return token != null;
   }
 
+  //Returns the token 
   String get token {
     //return token if it's valid & not expired
     if (_expiryDate != null &&
@@ -24,8 +25,17 @@ class Auth with ChangeNotifier {
     return null;
   }
 
+  //Returns the userID
+  String get userId{
+    return _userId;
+  }
+
+  //Use to authenticate the username & password requires for login/signup
   Future<void> _authenticate(
-      String email, String password, String urlSegment) async {
+    String email,
+    String password,
+    String urlSegment,
+  ) async {
     final url = '';
     try {
       final response = await http.post(

@@ -11,13 +11,15 @@ class UserProductsScreen extends StatelessWidget {
 
   // this method is used for RefreshIndicator widget, basically meant for fetching the product from server
   Future<void> _refreshProducts(BuildContext context) async {
-    await Provider.of<Products>(context).fetchProduct();
+    //here listen:false is necessary otherwise infinite loop problem will arrived
+    await Provider.of<Products>(context, listen: false).fetchProduct(true);
   }
 
   @override
   Widget build(BuildContext context) {
-    //We wnat to rebuild the state when Products added or removed or edited
-    final productsData = Provider.of<Products>(context);
+    //Inorder to avoid Infinite loop
+    // //We wnat to rebuild the state when Products added or removed or edited
+    // final productsData = Provider.of<Products>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -32,25 +34,35 @@ class UserProductsScreen extends StatelessWidget {
         ],
       ),
       drawer: AppDrawer(),
-      body: RefreshIndicator(
-        //this will show spinner when you pull down on the screen, until the products are retrievd from the server
-        onRefresh: () => _refreshProducts(context),
-        child: Padding(
-          padding: EdgeInsets.all(8),
-          child: ListView.builder(
-            itemCount: productsData.items.length,
-            itemBuilder: (_, i) => Column(
-              children: <Widget>[
-                UserProductItem(
-                  productsData.items[i].id,
-                  productsData.items[i].title,
-                  productsData.items[i].imageUrl,
-                ),
-                Divider(),
-              ],
-            ),
-          ),
-        ),
+      body: FutureBuilder(
+        future: _refreshProducts(context),
+        builder: (ctxt, snapShot) =>
+            snapShot.connectionState == ConnectionState.waiting
+                ? Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : RefreshIndicator(
+                    //this will show spinner when you pull down on the screen, until the products are retrievd from the server
+                    onRefresh: () => _refreshProducts(context),
+                    child: Consumer<Products>(
+                      builder: (ctxt, productsData, _) => Padding(
+                        padding: EdgeInsets.all(8),
+                        child: ListView.builder(
+                          itemCount: productsData.items.length,
+                          itemBuilder: (_, i) => Column(
+                            children: <Widget>[
+                              UserProductItem(
+                                productsData.items[i].id,
+                                productsData.items[i].title,
+                                productsData.items[i].imageUrl,
+                              ),
+                              Divider(),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
       ),
     );
   }

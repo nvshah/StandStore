@@ -46,8 +46,10 @@ class Products with ChangeNotifier {
   ];
 
   final String authToken;
+  //Inorder to track favorite status
+  final String userId;
 
-  Products(this.authToken, this._items);
+  Products(this._items, {this.authToken, this.userId});
 
   //Get the All products items
   List<Product> get items {
@@ -64,6 +66,8 @@ class Products with ChangeNotifier {
     return _items.firstWhere((item) => item.id == id);
   }
 
+  //NOTE : diff clients will possess diff list of items which will be shown to individual client their own items based on the login
+
   //add new product to current list
   Future<void> addProduct(Product product) async {
     final url = 'https://flutter-demo-e4fa6.firebaseio.com/products.json?auth=$authToken';
@@ -74,7 +78,8 @@ class Products with ChangeNotifier {
           'description': product.description,
           'imageUrl': product.imageUrl,
           'price': product.price,
-          'isFavorite': product.isFavorite,
+          'creatorId': userId,
+          // 'isFavorite': product.isFavorite,
         }));
 
     final newProduct = Product(
@@ -90,15 +95,24 @@ class Products with ChangeNotifier {
   }
 
   //Fetch Products from server
-  Future<void> fetchProduct() async {
-    final url = 'https://flutter-demo-e4fa6.firebaseio.com/products.json?auth=$authToken';
+  Future<void> fetchProduct([bool filterByUser = false]) async {
+    final filterString = filterByUser ? '&orderBy="creatorId"&equalTo="creatorId"' : ''; 
+    //URL to get all products
+    var url = 'https://flutter-demo-e4fa6.firebaseio.com/products.json?auth=$authToken$filterString';
     try {
       final response = await http.get(url);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
       if (extractedData == null) {
         return;
       }
+       
+      //URL to get the Favorites Products per user
+      url = 'https://flutter-demo-e4fa6.firebaseio.com/userFavorites/$userId.json?auth=$authToken';
+      final favoriteResponse = await http.get(url);
+      final favoriteData = json.decode(favoriteResponse.body);
+
       final List<Product> fetchedProducts = [];
+
       extractedData.forEach((prodId, prodData) {
         fetchedProducts.add(Product(
           id: prodId,
@@ -106,6 +120,7 @@ class Products with ChangeNotifier {
           description: prodData['description'],
           imageUrl: prodData['imageUrl'],
           price: prodData['price'],
+          isFavorite: favoriteData == null ? false : favoriteData[prodId] ?? false,
         ));
       });
       _items = fetchedProducts;

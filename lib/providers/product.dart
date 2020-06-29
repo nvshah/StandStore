@@ -26,19 +26,17 @@ class Product with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> toggleFavoriteStatus(String authToken) async {
+  Future<void> toggleFavoriteStatus(String authToken, String userId) async {
     final url =
-        'https://flutter-demo-e4fa6.firebaseio.com/products/$id.json?auth=$authToken';
+        'https://flutter-demo-e4fa6.firebaseio.com/userFavorites/$userId/$id.json?auth=$authToken';
     final oldStatus = isFavorite;
     isFavorite = !isFavorite;
     notifyListeners();
     try {
       //Inform server to update isFav value
-      final response = await http.patch(
+      final response = await http.put(
         url,
-        body: json.encode({
-          'isFavorite': isFavorite,
-        }),
+        body: json.encode(isFavorite),
       );
       //Something went wrong & operation was not perfromed at server side so undo changes
       if(response.statusCode >= 400){
