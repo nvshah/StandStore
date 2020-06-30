@@ -12,6 +12,7 @@ class UserProductsScreen extends StatelessWidget {
   // this method is used for RefreshIndicator widget, basically meant for fetching the product from server
   Future<void> _refreshProducts(BuildContext context) async {
     //here listen:false is necessary otherwise infinite loop problem will arrived
+    //fetch the product belonging to current client
     await Provider.of<Products>(context, listen: false).fetchProduct(true);
   }
 
@@ -34,16 +35,19 @@ class UserProductsScreen extends StatelessWidget {
         ],
       ),
       drawer: AppDrawer(),
+      //As we want to load first the products based on the clients when we reach this screen so We call refreshProducts initially
       body: FutureBuilder(
         future: _refreshProducts(context),
         builder: (ctxt, snapShot) =>
             snapShot.connectionState == ConnectionState.waiting
                 ? Center(
+                  //Till we fetch the client products
                     child: CircularProgressIndicator(),
                   )
                 : RefreshIndicator(
                     //this will show spinner when you pull down on the screen, until the products are retrievd from the server
                     onRefresh: () => _refreshProducts(context),
+                    //Re-build only the products Listview container
                     child: Consumer<Products>(
                       builder: (ctxt, productsData, _) => Padding(
                         padding: EdgeInsets.all(8),

@@ -99,20 +99,23 @@ class Products with ChangeNotifier {
     final filterString = filterByUser ? '&orderBy="creatorId"&equalTo="creatorId"' : ''; 
     //URL to get all products
     var url = 'https://flutter-demo-e4fa6.firebaseio.com/products.json?auth=$authToken$filterString';
+
     try {
+      //get all the products from server
       final response = await http.get(url);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
       if (extractedData == null) {
         return;
       }
        
-      //URL to get the Favorites Products per user
+      //URL to get the Favorites Products per user/client
       url = 'https://flutter-demo-e4fa6.firebaseio.com/userFavorites/$userId.json?auth=$authToken';
       final favoriteResponse = await http.get(url);
       final favoriteData = json.decode(favoriteResponse.body);
 
       final List<Product> fetchedProducts = [];
-
+      
+      //Convert every product in local format
       extractedData.forEach((prodId, prodData) {
         fetchedProducts.add(Product(
           id: prodId,

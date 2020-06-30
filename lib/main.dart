@@ -49,8 +49,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProxyProvider<Auth, Orders>(
           builder: (ctxt, auth, prevOrders) => Orders(
-            auth.token,
             prevOrders == null ? [] : prevOrders.orders,
+            authToken: auth.token,
+            userId: auth.userId,
           ),
         ),
       ],
@@ -62,6 +63,7 @@ class MyApp extends StatelessWidget {
             accentColor: Colors.deepOrange,
             fontFamily: "Lato",
           ),
+          //If token get's expired then we need to login again
           home: auth.isAuth ? ProductsOverviewScreen() : AuthScreen(),
           routes: {
             ProductDetailsScreen.routeName: (ctxt) => ProductDetailsScreen(),
