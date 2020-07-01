@@ -96,7 +96,7 @@ class Products with ChangeNotifier {
 
   //Fetch Products from server
   Future<void> fetchProduct([bool filterByUser = false]) async {
-    final filterString = filterByUser ? '&orderBy="creatorId"&equalTo="creatorId"' : ''; 
+    final filterString = filterByUser ? '&orderBy="creatorId"&equalTo="$userId"' : ''; 
     //URL to get all products
     var url = 'https://flutter-demo-e4fa6.firebaseio.com/products.json?auth=$authToken$filterString';
 
@@ -146,6 +146,7 @@ class Products with ChangeNotifier {
             'description': product.description,
             'imageUrl': product.imageUrl,
             'price': product.price,
+            // 'creatorId': userId,
           }));
       //Update item locally
       _items[index] = product;

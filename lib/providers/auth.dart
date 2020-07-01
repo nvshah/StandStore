@@ -38,7 +38,7 @@ class Auth with ChangeNotifier {
     String password,
     String urlSegment,
   ) async {
-    final url = '';
+    final url = 'https://identitytoolkit.googleapis.com/v1/accounts:$urlSegment?key=AIzaSyCNvABXth6ds8PTmeGluG7-GKosUmVQtN0';
     try {
       final response = await http.post(
         url,
@@ -65,11 +65,11 @@ class Auth with ChangeNotifier {
   }
 
   Future<void> signUp(String email, String password) async {
-    return _authenticate(email, password, 'signupNewUser');
+    return _authenticate(email, password, 'signUp');
   }
 
   Future<void> login(String email, String password) async {
-    return _authenticate(email, password, 'verifyPassword');
+    return _authenticate(email, password, 'signInWithPassword');
   }
 
   void logout(){
