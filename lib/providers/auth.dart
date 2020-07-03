@@ -3,6 +3,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/http_exception.dart';
 
@@ -16,7 +17,7 @@ class Auth with ChangeNotifier {
     return token != null;
   }
 
-  //Returns the token 
+  //Returns the token
   String get token {
     //return token if it's valid & not expired
     if (_expiryDate != null &&
@@ -28,7 +29,7 @@ class Auth with ChangeNotifier {
   }
 
   //Returns the userID
-  String get userId{
+  String get userId {
     return _userId;
   }
 
@@ -38,7 +39,8 @@ class Auth with ChangeNotifier {
     String password,
     String urlSegment,
   ) async {
-    final url = 'https://identitytoolkit.googleapis.com/v1/accounts:$urlSegment?key=AIzaSyCNvABXth6ds8PTmeGluG7-GKosUmVQtN0';
+    final url =
+        'https://identitytoolkit.googleapis.com/v1/accounts:$urlSegment?key=AIzaSyCNvABXth6ds8PTmeGluG7-GKosUmVQtN0';
     try {
       final response = await http.post(
         url,
@@ -59,6 +61,13 @@ class Auth with ChangeNotifier {
       //Start autoLogout task in parallel so that when token get's expired user will be logged out implicitly
       _autoLogout();
       notifyListeners();
+      final prefs = await SharedPreferences.getInstance();
+      final userData = json.encode({
+        'token': _token,
+        'userId': _userId,
+        'expiryDate': _expiryDate.toIso8601String(),
+      });
+      prefs.setString('userData', userData);
     } catch (error) {
       throw error;
     }
@@ -72,20 +81,45 @@ class Auth with ChangeNotifier {
     return _authenticate(email, password, 'signInWithPassword');
   }
 
-  void logout(){
+  Future<bool> tryAutoLogin() async{
+    //here it must access the shared preferences
+    final prefs = await SharedPreferences.getInstance();
+    if(!prefs.containsKey('userData')){
+      return false;
+    }
+    final extractedUserData = json.decode(prefs.getString('userData')) as Map<String, Object>;
+    final expiryDate = DateTime.parse(extractedUserData['expiryDate']);
+
+    if(expiryDate.isBefore(DateTime.now())){
+      return false;
+    }
+
+    _token = extractedUserData['token'];
+    _userId = extractedUserData['userId'];
+    _expiryDate = expiryDate;
+    notifyListeners();
+    //reset auto logut time // as new login automatically takes place
+    _autoLogout();
+    return true;
+  }
+
+  Future<void> logout() async {
     _token = null;
     _userId = null;
     _expiryDate = null;
-    if(_authTimer != null){
+    if (_authTimer != null) {
       _authTimer.cancel();
       _authTimer = null;
     }
     notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    //prefs.remove('userData');
+    prefs.clear();
   }
-  
+
   //Logout Automatically when token gets expired
-  void _autoLogout(){
-    if(_authTimer != null){
+  void _autoLogout() {
+    if (_authTimer != null) {
       _authTimer.cancel();
     }
     //calculate the time after which user token will be invalid & needs to re-login

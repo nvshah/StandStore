@@ -12,10 +12,12 @@ import './screens/user_products_screen.dart';
 import './screens/edit_product_screen.dart';
 import './screens/auth_screen.dart';
 import './providers/auth.dart';
+import './screens/splash_screen.dart';
 
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
+  //Here Providers are provided on so-called apparant root widget of the app
   @override
   Widget build(BuildContext context) {
     //This allows to register a class so that we can listen in child widgets; so this make it a Provider
@@ -64,7 +66,16 @@ class MyApp extends StatelessWidget {
             fontFamily: "Lato",
           ),
           //If token get's expired then we need to login again
-          home: auth.isAuth ? ProductsOverviewScreen() : AuthScreen(),
+          home: auth.isAuth
+              ? ProductsOverviewScreen()
+              : FutureBuilder(
+                  future: auth.tryAutoLogin(),
+                  builder: (ctxt, authResultSnapShot) =>
+                      authResultSnapShot.connectionState ==
+                              ConnectionState.waiting
+                          ? SplashScreen()
+                          : AuthScreen(),
+                ),
           routes: {
             ProductDetailsScreen.routeName: (ctxt) => ProductDetailsScreen(),
             CartScreen.routeName: (ctxt) => CartScreen(),
