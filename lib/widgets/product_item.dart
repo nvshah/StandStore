@@ -38,8 +38,14 @@ class ProductItem extends StatelessWidget {
             Navigator.of(context).pushNamed(ProductDetailsScreen.routeName,
                 arguments: product.id);
           },
-          child: Image.network(
-            product.imageUrl,
+          // child: Image.network(
+          //   product.imageUrl,
+          //   fit: BoxFit.cover,
+          // ),
+          //Placeholder images before imgages get loaded from network & fit into the position
+          child: FadeInImage(
+            placeholder: AssetImage('assets/images/product-placeholder.png'),
+            image: NetworkImage(product.imageUrl),
             fit: BoxFit.cover,
           ),
         ),
