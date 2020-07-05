@@ -36,6 +36,7 @@ class ProductsGrid extends StatelessWidget {
           // imageUrl: products[i].imageUrl,
         ),
       ),
+      //Size of all Grid Child will be determined on basis of below mentioned paramter values esp childAspectRatio
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         childAspectRatio: 3 / 2,
